@@ -58,6 +58,9 @@ rule all:
 
 rule trim_reads:
     input:
+
+rule trim_reads:
+    input:
         expand("data/{{sample}}_{read}.fastq.gz", read=["R1", "R2"])
     output:
         "data/trimmed_reads/{sample}_R1_paired.fastq.gz",
@@ -190,7 +193,11 @@ rule call_variants:
     log: "logs/{sample}.call_variants.log"
     shell:
         "module load gatk;"
+<<<<<<< HEAD
         "java -jar -Xmx4g {config[GATK]} -T HaplotypeCaller -R {config[GENOME]} -I {input} -o {output.gvcf} -ERC GVCF -bamout {output.global_realign} --log_to_file {log}"
+=======
+        "java -jar -Xmx4g {config[GATK]} -T HaplotypeCaller -R {config[GENOME]} -I {input} -o {output.gvcf} -ERC GVCF -bamout {output.global_realign} --log_to_file {log};"
+>>>>>>> fc9248af2dec39fa0ce3c4f608033fc79ba0e002
 
 rule write_variant_list:
     input:
