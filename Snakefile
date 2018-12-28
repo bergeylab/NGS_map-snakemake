@@ -6,58 +6,7 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        #trim reads
-        expand("data/{sample}_{read}.fastq.gz", sample=config["SAMPLES"], read=["R1", "R2"]),
-        #bwa_map_and_samtools_make_bam
-        expand("data/trimmed_reads/{sample}_{read}_paired.fastq.gz", sample=config["SAMPLES"], read=["R1", "R2"]),
-        #sort_bam
-        expand("data/aligned_reads/{sample}.PE.bwa.bam", sample=config["SAMPLES"]),
-        #index_bam
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.bam", sample=config["SAMPLES"]),
-        #fix_mate_pairs
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.bam", sample=config["SAMPLES"]),
-        #filter_mapped_and_paired_reads
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.bam", sample=config["SAMPLES"]),
-        #remove_duplicate_reads
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.bam", sample=config["SAMPLES"]),
-        #add_read_groups
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.postdup.bam", sample=config["SAMPLES"]),
-        #quality_filter_reads
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.postdup.RG.bam", sample=config["SAMPLES"]),
-        #remove_louse_mitochondrial_reads
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.postdup.RG.passed.bam", sample=config["SAMPLES"]),
-        #local_realignment_ID
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.postdup.RG.passed.mito_removed.bam", sample=config["SAMPLES"]),
-        #local_realignment
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.postdup.RG.passed.mito_removed.bam", sample=config["SAMPLES"]),
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.postdup.RG.passed.mito_removed.bam.list", sample=config["SAMPLES"]),
-        #call_variants
-        expand("data/aligned_reads/{sample}.PE.bwa.sorted.fixed.filtered.postdup.RG.passed.mito_removed.local_realign.bam", sample=config["SAMPLES"]),
-        #make_variant_list
-        expand("data/variants/{sample}.g.vcf.gz", sample=config["SAMPLES"]),
-        #combine_variant_files
-        "data/variants/variants.list",
-        #joint_variant_calling
-        "data/variants/cohort.g.vcf.gz",
-        #extract_snps
-        "data/variants/combined.vcf.gz",
-        #extract_indels
-        "data/variants/combined.vcf.gz",
-        #hard_filter_snps
-        "data/variants/combined_snps.vcf",
-        #hard_filter_indels
-        "data/variants/combined_indels.vcf",
-        #filter_maf
-        "data/variants/combined_snps.vcf",
-        #format_vcf_for_map_ped
-        "data/variants/combined_snps.flt.maf.vcf",
-        #make_map_ped
-        "data/variants/combined_snps.flt.maf.no_chr.vcf",
-        #filter_ld
         "data/variants/combined_snps.flt.maf.no_chr.plink"
-
-rule trim_reads:
-    input:
 
 rule trim_reads:
     input:
@@ -193,11 +142,7 @@ rule call_variants:
     log: "logs/{sample}.call_variants.log"
     shell:
         "module load gatk;"
-<<<<<<< HEAD
         "java -jar -Xmx4g {config[GATK]} -T HaplotypeCaller -R {config[GENOME]} -I {input} -o {output.gvcf} -ERC GVCF -bamout {output.global_realign} --log_to_file {log}"
-=======
-        "java -jar -Xmx4g {config[GATK]} -T HaplotypeCaller -R {config[GENOME]} -I {input} -o {output.gvcf} -ERC GVCF -bamout {output.global_realign} --log_to_file {log};"
->>>>>>> fc9248af2dec39fa0ce3c4f608033fc79ba0e002
 
 rule write_variant_list:
     input:
